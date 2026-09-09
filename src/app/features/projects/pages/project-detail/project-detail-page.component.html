@@ -1,0 +1,116 @@
+<div class="max-w-4xl space-y-4">
+  <div>
+    <a
+      routerLink="/projects"
+      class="inline-flex items-center gap-1.5 text-sm font-medium text-[#787676] transition hover:text-[#1350DF]"
+    >
+      <svg lucideArrowLeft class="h-4 w-4" aria-hidden="true"></svg>
+      Projects
+    </a>
+  </div>
+
+  @if (loading()) {
+    <nz-card class="rounded-lg border border-[#D2D2D2]">
+      <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 6 }"></nz-skeleton>
+    </nz-card>
+  } @else if (project(); as p) {
+    <nz-card [nzExtra]="cardExtra" class="rounded-xl border border-[#D2D2D2]">
+      @if (!isEditing()) {
+        <nz-descriptions
+          [nzBordered]="true"
+          [nzColumn]="{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }"
+          class="mb-4"
+        >
+          <nz-descriptions-item nzTitle="Name">
+            <strong>{{ p.name }}</strong>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Status">
+            <nz-tag [nzColor]="statusColor(p.status)" class="uppercase font-medium text-xs">
+              {{ p.status }}
+            </nz-tag>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Owner">
+            <span class="flex items-center gap-1.5">
+              <svg lucideUser class="h-3.5 w-3.5 text-[#787676]" aria-hidden="true"></svg>
+              {{ p.ownerName }}
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Team">
+            <span class="flex items-center gap-1.5">
+              <svg lucideUsers class="h-3.5 w-3.5 text-[#787676]" aria-hidden="true"></svg>
+              {{ p.memberCount }} contributors
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Created">
+            <span class="flex items-center gap-1.5 text-xs text-[#787676]">
+              <svg lucideCalendar class="h-3.5 w-3.5 text-[#787676]" aria-hidden="true"></svg>
+              {{ p.createdAt | date: 'fullDate' }}
+            </span>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="ID">
+            <code class="rounded bg-[#f1f5f9] px-1.5 py-0.5 text-xs text-[#787676]">{{
+              p.id
+            }}</code>
+          </nz-descriptions-item>
+          <nz-descriptions-item nzTitle="Description" [nzSpan]="2">
+            <p class="text-sm text-[#475569] leading-normal">{{ p.description }}</p>
+          </nz-descriptions-item>
+        </nz-descriptions>
+      } @else {
+        <form nz-form [formGroup]="editForm" nzLayout="vertical" (ngSubmit)="saveProject()">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="editName">Project Name</nz-form-label>
+            <nz-form-control nzErrorTip="Please enter a valid project name (minimum 2 characters)">
+              <input nz-input id="editName" formControlName="name" placeholder="Project name" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="editDescription">Description</nz-form-label>
+            <nz-form-control nzErrorTip="Please provide a project description">
+              <textarea
+                nz-input
+                id="editDescription"
+                formControlName="description"
+                rows="3"
+                placeholder="Project summary"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <div class="flex items-center justify-end gap-3 border-t border-[#f1f5f9] pt-4">
+            <button type="button" nz-button (click)="cancelEditing()">
+              <span>Cancel</span>
+            </button>
+            <button
+              type="submit"
+              nz-button
+              nzType="primary"
+              [nzLoading]="saving()"
+              [disabled]="editForm.invalid"
+            >
+              <svg lucideSave class="h-3.5 w-3.5" aria-hidden="true"></svg>
+              <span>Save</span>
+            </button>
+          </div>
+        </form>
+      }
+    </nz-card>
+  } @else {
+    <nz-card class="rounded-lg border border-[#D2D2D2] py-8 text-center">
+      <p class="text-base text-[#787676]">Project not found.</p>
+      <a routerLink="/projects" class="mt-2 inline-block text-sm text-[#1350DF] hover:underline">
+        Return to Projects
+      </a>
+    </nz-card>
+  }
+</div>
+
+<ng-template #cardExtra>
+  @if (!isEditing() && project()) {
+    <button type="button" nz-button nzType="default" (click)="startEditing()" class="text-xs">
+      <svg lucideEdit class="h-3.5 w-3.5" aria-hidden="true"></svg>
+      <span>Edit</span>
+    </button>
+  }
+</ng-template>

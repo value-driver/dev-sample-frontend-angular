@@ -1,0 +1,45 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submit()" nzLayout="vertical">
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">Name</nz-form-label>
+    <nz-form-control
+      [nzSm]="14"
+      [nzXs]="24"
+      nzErrorTip="Please input a valid name (min 2 characters)!"
+    >
+      <input nz-input formControlName="name" id="name" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">Email</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input a valid email!">
+      <input nz-input formControlName="email" id="email" type="email" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="role">Role</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-select id="role" formControlName="role">
+        <nz-option nzValue="admin" nzLabel="Admin"></nz-option>
+        <nz-option nzValue="developer" nzLabel="Developer"></nz-option>
+        <nz-option nzValue="viewer" nzLabel="Viewer"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="status">Status</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-select id="status" formControlName="status">
+        <nz-option nzValue="active" nzLabel="Active"></nz-option>
+        <nz-option nzValue="inactive" nzLabel="Inactive"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="flex justify-end gap-2 mt-4">
+    <button nz-button type="button" (click)="cancel()">Cancel</button>
+    <button nz-button nzType="primary" type="submit">Submit</button>
+  </div>
+</form>

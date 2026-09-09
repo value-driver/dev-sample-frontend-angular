@@ -1,0 +1,86 @@
+<div class="space-y-4">
+  <div class="flex justify-end">
+    <button type="button" nz-button nzType="primary" (click)="openUserForm()">Create User</button>
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_12rem]">
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton" class="w-full">
+      <input
+        type="text"
+        nz-input
+        placeholder="Search users"
+        [ngModel]="usersState.searchQuery()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button type="button" nz-button nzType="primary" nzSearch>
+        <svg lucideSearch class="h-4 w-4" aria-hidden="true"></svg>
+      </button>
+    </ng-template>
+
+    <nz-select
+      [ngModel]="usersState.roleFilter()"
+      (ngModelChange)="onRoleFilterChange($event)"
+      nzPlaceHolder="Filter by role"
+      nzAllowClear
+      class="w-full"
+    >
+      <nz-option nzValue="admin" nzLabel="Admin"></nz-option>
+      <nz-option nzValue="developer" nzLabel="Developer"></nz-option>
+      <nz-option nzValue="viewer" nzLabel="Viewer"></nz-option>
+    </nz-select>
+  </div>
+
+  <div class="rounded-lg border border-[#D2D2D2] bg-white">
+    <nz-table
+      #basicTable
+      [nzData]="usersState.users()"
+      [nzFrontPagination]="false"
+      [nzTotal]="usersState.total()"
+      [nzPageIndex]="usersState.pageIndex()"
+      [nzPageSize]="usersState.pageSize()"
+      [nzLoading]="usersState.loading()"
+      nzSize="small"
+      (nzPageIndexChange)="onPageIndexChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+    >
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (data of basicTable.data; track data.id) {
+          <tr>
+            <td>{{ data.name }}</td>
+            <td>{{ data.email }}</td>
+            <td>
+              <nz-tag
+                [nzColor]="
+                  data.role === 'admin' ? 'red' : data.role === 'developer' ? 'blue' : 'green'
+                "
+                >{{ data.role }}</nz-tag
+              >
+            </td>
+            <td>
+              <nz-tag [nzColor]="data.status === 'active' ? 'success' : 'default'">{{
+                data.status
+              }}</nz-tag>
+            </td>
+            <td>
+              <div class="flex items-center gap-2 text-xs">
+                <a (click)="openUserForm(data)">Edit</a>
+                <a (click)="confirmDelete(data)" class="text-red-500">Delete</a>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+</div>

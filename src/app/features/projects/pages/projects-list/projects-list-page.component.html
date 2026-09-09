@@ -1,0 +1,55 @@
+<div class="space-y-4">
+  <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_11rem]">
+    <nz-input-group [nzPrefix]="prefixSearch" class="w-full">
+      <input
+        nz-input
+        placeholder="Search projects"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+      />
+    </nz-input-group>
+    <ng-template #prefixSearch>
+      <svg lucideSearch class="h-4 w-4 text-[#787676]" aria-hidden="true"></svg>
+    </ng-template>
+
+    <nz-select
+      [ngModel]="statusFilter()"
+      (ngModelChange)="statusFilter.set($event)"
+      nzPlaceHolder="Filter by Status"
+      nzAllowClear
+      class="w-full sm:w-48"
+    >
+      <nz-option nzValue="active" nzLabel="Active"></nz-option>
+      <nz-option nzValue="planning" nzLabel="Planning"></nz-option>
+      <nz-option nzValue="archived" nzLabel="Archived"></nz-option>
+    </nz-select>
+  </div>
+
+  @if (projectsState.error()) {
+    <app-page-state
+      state="error"
+      title="Projects could not load"
+      [description]="projectsState.error()!"
+      (retry)="reload()"
+    />
+  } @else if (projectsState.loading() && projectsState.projects().length === 0) {
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <nz-card class="rounded-lg border border-[#D2D2D2]">
+          <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 3 }"></nz-skeleton>
+        </nz-card>
+      }
+    </div>
+  } @else if (filteredProjects().length === 0) {
+    <app-page-state
+      state="empty"
+      [title]="search() || statusFilter() ? 'No matching projects' : 'No projects yet'"
+    />
+  } @else {
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      @for (project of filteredProjects(); track project.id) {
+        <app-project-card [project]="project" (onArchive)="onArchive($event)"></app-project-card>
+      }
+    </div>
+  }
+</div>

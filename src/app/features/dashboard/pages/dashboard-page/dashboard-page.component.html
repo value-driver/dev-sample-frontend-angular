@@ -1,0 +1,230 @@
+<div class="space-y-4">
+  @if (dashboardState.error()) {
+    <nz-alert
+      nzType="error"
+      nzMessage="Failed to load dashboard"
+      [nzDescription]="dashboardState.error()!"
+      nzShowIcon
+    ></nz-alert>
+  }
+
+  @if (dashboardState.loading() && !dashboardState.hasData()) {
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="rounded-lg border border-[#D2D2D2] bg-white p-3">
+          <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 2 }"></nz-skeleton>
+        </div>
+      }
+    </div>
+  }
+
+  @if (dashboardState.summary(); as s) {
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-lg border border-[#D2D2D2] bg-white p-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-[#787676]">Active Users</p>
+            <p class="mt-1 text-2xl font-semibold text-[#101828]">{{ s.activeUsers }}</p>
+          </div>
+          <div class="rounded-lg bg-[#eff6ff] p-2">
+            <svg lucideUsers class="h-5 w-5 text-[#3b82f6]" aria-hidden="true"></svg>
+          </div>
+        </div>
+        <div
+          class="mt-2 flex items-center gap-1 text-xs font-medium"
+          [class.text-[#16a34a]]="s.activeUsersChange >= 0"
+          [class.text-[#dc2626]]="s.activeUsersChange < 0"
+        >
+          @if (s.activeUsersChange >= 0) {
+            <svg lucideChevronUp class="h-3 w-3" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideChevronDown class="h-3 w-3" aria-hidden="true"></svg>
+          }
+          {{ s.activeUsersChange > 0 ? '+' : '' }}{{ s.activeUsersChange }}%
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-[#D2D2D2] bg-white p-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-[#787676]">Open Projects</p>
+            <p class="mt-1 text-2xl font-semibold text-[#101828]">{{ s.openProjects }}</p>
+          </div>
+          <div class="rounded-lg bg-[#f0fdf4] p-2">
+            <svg lucideGitBranch class="h-5 w-5 text-[#16a34a]" aria-hidden="true"></svg>
+          </div>
+        </div>
+        <div
+          class="mt-2 flex items-center gap-1 text-xs font-medium"
+          [class.text-[#16a34a]]="s.openProjectsChange >= 0"
+          [class.text-[#dc2626]]="s.openProjectsChange < 0"
+        >
+          @if (s.openProjectsChange >= 0) {
+            <svg lucideChevronUp class="h-3 w-3" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideChevronDown class="h-3 w-3" aria-hidden="true"></svg>
+          }
+          {{ s.openProjectsChange > 0 ? '+' : '' }}{{ s.openProjectsChange }}
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-[#D2D2D2] bg-white p-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-[#787676]">
+              Deployments Today
+            </p>
+            <p class="mt-1 text-2xl font-semibold text-[#101828]">{{ s.deploymentsToday }}</p>
+          </div>
+          <div class="rounded-lg bg-[#fef9ec] p-2">
+            <svg lucideRocket class="h-5 w-5 text-[#d97706]" aria-hidden="true"></svg>
+          </div>
+        </div>
+        <div
+          class="mt-2 flex items-center gap-1 text-xs font-medium"
+          [class.text-[#16a34a]]="s.deploymentsTodayChange >= 0"
+          [class.text-[#dc2626]]="s.deploymentsTodayChange < 0"
+        >
+          @if (s.deploymentsTodayChange >= 0) {
+            <svg lucideChevronUp class="h-3 w-3" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideChevronDown class="h-3 w-3" aria-hidden="true"></svg>
+          }
+          {{ s.deploymentsTodayChange > 0 ? '+' : '' }}{{ s.deploymentsTodayChange }}%
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-[#D2D2D2] bg-white p-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wider text-[#787676]">Security</p>
+            <p
+              class="mt-1 text-2xl font-semibold"
+              [class.text-[#16a34a]]="s.securityStatus === 'healthy'"
+              [class.text-[#dc2626]]="s.securityStatus !== 'healthy'"
+            >
+              {{ s.securityStatus === 'healthy' ? 'Healthy' : 'Alert' }}
+            </p>
+          </div>
+          <div
+            class="rounded-lg p-2"
+            [class]="
+              s.securityStatus === 'healthy'
+                ? 'bg-[#f0fdf4] text-[#16a34a]'
+                : 'bg-[#fef2f2] text-[#dc2626]'
+            "
+          >
+            <svg lucideShieldCheck class="h-5 w-5" aria-hidden="true"></svg>
+          </div>
+        </div>
+        <div class="mt-2 text-xs font-medium text-[#787676]">
+          Coverage {{ s.testCoverage }}
+          <span
+            class="ml-1"
+            [class.text-[#16a34a]]="s.testCoverageChange >= 0"
+            [class.text-[#dc2626]]="s.testCoverageChange < 0"
+          >
+            ({{ s.testCoverageChange > 0 ? '+' : '' }}{{ s.testCoverageChange }}%)
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div class="rounded-lg border border-[#D2D2D2] bg-white">
+      <div class="border-b border-[#D2D2D2] px-4 py-3">
+        <div class="flex items-center gap-2">
+          <svg lucideActivity class="h-4 w-4 text-[#787676]" aria-hidden="true"></svg>
+          <h2 class="text-sm font-semibold text-[#101828]">Recent Activity</h2>
+        </div>
+      </div>
+      <div class="divide-y divide-[#f1f5f9]">
+        @if (dashboardState.loading() && dashboardState.recentActivity().length === 0) {
+          @for (item of [1, 2, 3, 4, 5]; track item) {
+            <div class="px-4 py-2.5">
+              <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+            </div>
+          }
+        }
+        @for (event of dashboardState.recentActivity(); track event.id) {
+          <div class="flex items-start gap-3 px-4 py-2.5">
+            <nz-tag [nzColor]="activityTypeColor(event.type)" class="mt-0.5 shrink-0 !text-xs">
+              {{ activityTypeLabel[event.type] }}
+            </nz-tag>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-[#101828]">{{ event.title }}</p>
+              <p class="truncate text-xs text-[#787676]">{{ event.description }}</p>
+              <p class="mt-0.5 text-xs text-[#787676]">
+                {{ event.actor }} · {{ formatRelative(event.timestamp) }}
+              </p>
+            </div>
+          </div>
+        }
+        @if (
+          !dashboardState.loading() &&
+          dashboardState.recentActivity().length === 0 &&
+          !dashboardState.error()
+        ) {
+          <div class="px-4 py-6 text-center text-sm text-[#787676]">No recent activity</div>
+        }
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-[#D2D2D2] bg-white">
+      <div class="border-b border-[#D2D2D2] px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <svg lucideCheckCircle2 class="h-4 w-4 text-[#787676]" aria-hidden="true"></svg>
+            <h2 class="text-sm font-semibold text-[#101828]">Project Health</h2>
+          </div>
+          @if (dashboardState.hasData()) {
+            <span class="text-xs text-[#787676]"
+              >{{ dashboardState.healthyProjectCount() }} /
+              {{ dashboardState.projectHealth().length }} healthy</span
+            >
+          }
+        </div>
+      </div>
+      <div class="divide-y divide-[#f1f5f9]">
+        @if (dashboardState.loading() && dashboardState.projectHealth().length === 0) {
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="px-4 py-2.5">
+              <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+            </div>
+          }
+        }
+        @for (project of dashboardState.projectHealth(); track project.id) {
+          <div class="flex items-center justify-between gap-3 px-4 py-2.5">
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-[#101828]">{{ project.name }}</p>
+              <p class="text-xs text-[#787676]">
+                Last deploy: {{ formatRelative(project.lastDeploy) }}
+              </p>
+            </div>
+            <div class="ml-3 flex items-center gap-3">
+              <div class="text-right">
+                <p class="text-xs font-medium text-[#101828]">{{ project.coverage }}%</p>
+                <p class="text-xs text-[#787676]">coverage</p>
+              </div>
+              @if (project.status === 'healthy') {
+                <svg lucideCheckCircle2 class="h-4 w-4 text-[#16a34a]" aria-label="Healthy"></svg>
+              } @else if (project.status === 'warning') {
+                <svg lucideAlertTriangle class="h-4 w-4 text-[#d97706]" aria-label="Warning"></svg>
+              } @else {
+                <svg lucideAlertTriangle class="h-4 w-4 text-[#dc2626]" aria-label="Failing"></svg>
+              }
+            </div>
+          </div>
+        }
+        @if (
+          !dashboardState.loading() &&
+          dashboardState.projectHealth().length === 0 &&
+          !dashboardState.error()
+        ) {
+          <div class="px-4 py-6 text-center text-sm text-[#787676]">No projects tracked</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

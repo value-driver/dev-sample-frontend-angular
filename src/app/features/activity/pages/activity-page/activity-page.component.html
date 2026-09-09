@@ -1,0 +1,98 @@
+<div class="max-w-4xl space-y-4">
+  <div class="flex justify-end">
+    <button type="button" nz-button [nzLoading]="loading()" (click)="loadActivity()">
+      <svg lucideRefreshCw class="h-3.5 w-3.5" aria-hidden="true"></svg>
+      <span>Refresh</span>
+    </button>
+  </div>
+
+  @if (error()) {
+    <nz-alert
+      nzType="error"
+      nzShowIcon
+      [nzMessage]="'External API Error'"
+      [nzDescription]="errorDescription"
+      class="rounded-lg"
+    ></nz-alert>
+    <ng-template #errorDescription>
+      <div class="mt-1 flex items-center justify-between">
+        <span>{{ error() }}</span>
+        <button type="button" nz-button nzSize="small" nzDanger (click)="loadActivity()">
+          Retry
+        </button>
+      </div>
+    </ng-template>
+  }
+
+  @if (loading() && events().length === 0) {
+    <nz-card class="rounded-lg border border-[#D2D2D2]">
+      <div class="space-y-4">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="flex gap-3 border-b border-[#f1f5f9] pb-3 last:border-0 last:pb-0">
+            <div class="h-9 w-9 shrink-0 rounded-full bg-[#EBF5FF] animate-pulse"></div>
+            <div class="flex-1">
+              <nz-skeleton [nzActive]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+            </div>
+          </div>
+        }
+      </div>
+    </nz-card>
+  } @else if (events().length === 0 && !error()) {
+    <nz-card class="rounded-lg border border-[#D2D2D2] py-8 text-center">
+      <nz-empty nzNotFoundContent="No recent activity."></nz-empty>
+    </nz-card>
+  } @else {
+    <nz-card class="rounded-lg border border-[#D2D2D2]">
+      <div class="divide-y divide-[#f1f5f9]">
+        @for (event of events(); track event.id) {
+          <div class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+            <div
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EBF5FF] text-[#475569]"
+            >
+              @if (event.type === 'commit') {
+                <svg lucideGitCommit class="h-4 w-4 text-[#2563eb]" aria-hidden="true"></svg>
+              } @else if (event.type === 'pr') {
+                <svg lucideGitPullRequest class="h-4 w-4 text-[#16a34a]" aria-hidden="true"></svg>
+              } @else if (event.type === 'deploy') {
+                <svg lucideRocket class="h-4 w-4 text-[#ea580c]" aria-hidden="true"></svg>
+              } @else if (event.type === 'review') {
+                <svg lucideEye class="h-4 w-4 text-[#9333ea]" aria-hidden="true"></svg>
+              } @else {
+                <svg lucideCircleDot class="h-4 w-4 text-[#dc2626]" aria-hidden="true"></svg>
+              }
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-semibold text-[#101828]">{{ event.actor }}</span>
+                <nz-tag
+                  [nzColor]="typeColor(event.type)"
+                  class="!text-[11px] font-medium uppercase"
+                >
+                  {{ typeLabel(event.type) }}
+                </nz-tag>
+                <span class="text-xs text-[#787676]">
+                  in <strong class="text-[#1350DF]">{{ event.projectName }}</strong>
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-[#475569] leading-normal">{{ event.description }}</p>
+              <div class="mt-1 flex items-center gap-3 text-xs text-[#787676]">
+                <span>{{ formatRelative(event.timestamp) }}</span>
+                @if (event.url) {
+                  <a
+                    [href]="event.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[#1350DF] hover:underline"
+                  >
+                    View in VCS
+                  </a>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </nz-card>
+  }
+</div>
