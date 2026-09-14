@@ -1,0 +1,7 @@
+{
+  "source": "openapi/sample-openapi.json",
+  "format": "openapi",
+  "lastImported": "2026-09-14T21:00:07.628Z",
+  "totalModules": 2,
+  "moduleNames": ["auth", "users"]
+}
